@@ -1,0 +1,12 @@
+def fibo(n):
+    if n<=1:
+        return n
+    else:
+        return(fibo(n-1)+fibo(n-2))
+num_terms = int(input("enter the number of terms:"))
+if num_terms <= 0:
+    print("enter a positive number")
+else:
+    print("fibonacci series")
+    for i in range(num_terms):
+        print(fibo(i),end="")

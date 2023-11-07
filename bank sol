@@ -1,0 +1,41 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.6;
+
+contract Bank {
+    mapping(address=>uint) public user_account;
+    mapping (address=>bool) public user_exists;
+
+    function create() public payable returns (string memory) {
+        require(user_exists[msg.sender]==false, "Account already exists");
+        if (msg.value == 0) {
+            user_account[msg.sender] = 0;
+            user_exists[msg.sender] = true;
+            return "Account created";
+        }
+        user_account[msg.sender] = msg.value;
+        user_exists[msg.sender] = true;
+    }
+
+    function deposit() public payable returns (string memory) {
+        require(user_exists[msg.sender]==true, "Invalid Account");
+        require(msg.value>0, "invalid amount");
+        user_account[msg.sender] += msg.value;
+        return "Deposit done";
+    }
+
+    function withdraw(uint amt) public payable returns (string memory) {
+        require(user_exists[msg.sender]==true, "invalid account");
+        require(user_account[msg.sender]>amt, "insufficient balance");
+        user_account[msg.sender] -= msg.value;
+        return "Withdraw done";
+    }
+
+    function transfer(uint amt, address addr) public payable returns (string memory) {
+        require(user_exists[msg.sender]==true, "invalid account");
+        require(user_exists[addr]==true, "receiver account invalid");
+        require(user_account[msg.sender]>amt, "insufficient balance");
+        user_account[msg.sender] -= msg.value;
+        user_account[addr] += msg.value;
+        return "transfer successful";
+    }
+}

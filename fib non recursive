@@ -1,0 +1,10 @@
+n = int(input("Enter the number of terms: "))
+t1 = 0
+t2 = 1
+print("Fibonacci series")
+print("0 1", end=" ")
+for i in range(2, n):
+    next_term = t1 + t2
+    t1 = t2
+    t2 = next_term
+    print(next_term, end=" ")

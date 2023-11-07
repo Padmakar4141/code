@@ -1,0 +1,63 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.cluster import KMeans
+import numpy as np
+from sklearn.metrics import classification_report
+
+df = pd.read_csv('sales_data_sample.csv')
+
+df.head()
+
+sales = df.drop(['ORDERNUMBER','ADDRESSLINE1','ADDRESSLINE2','CITY','STATE','POSTALCODE','COUNTRY','TERRITORY','CONTACTLASTNAME','CONTACTFIRSTNAME','PHONE'],axis=1)
+
+sales.isnull().sum()
+
+def remove_outliers(df, col):
+    Q1 = df[col].quantile(0.25)
+    Q3 = df[col].quantile(0.75)
+    IQR = Q3-Q1
+    lower = Q1 - 1.5*IQR
+    upper = Q3 + 1.5*IQR
+    df[col] = np.clip(df[col],upper, lower)
+
+df.plot(kind='box', layout=(7,2),figsize=(25,25),subplots=True)
+
+sales.dtypes
+
+remove_outliers(df,"SALES")
+
+remove_outliers(df,"QUANTITYORDERED")
+remove_outliers(df,"MSRP")
+
+df.plot(kind='box', layout=(7,2),figsize=(25,25),subplots=True)
+
+df = pd.get_dummies(df, columns=['COUNTRY','PRODUCTLINE','DEALSIZE'])
+
+df.head()
+
+df.drop('STATUS',axis=1, inplace=True)
+
+df.head()
+
+df = df.groupby(by=['ORDERDATE']).sum()
+
+df.head()
+
+df.drop(['QTR_ID'],axis=1, inplace=True)
+
+df.head()
+
+from sklearn.preprocessing import StandardScaler
+
+scaler = StandardScaler()
+
+df = scaler.fit_transform(df)
+
+scores = []
+range_values = (1,15)
+for i in range_values:
+    kmeans = KMeans(n_clusters=i)
+    kmeans.fit(df)
+    scores.append(kmeans.inertia_)
+
+km = KMeans()
